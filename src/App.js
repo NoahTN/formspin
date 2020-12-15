@@ -18,6 +18,14 @@ function App() {
           Learn React
         </a>
       </header>
+      <div className="App-main">
+        <div>
+          ViewBox
+        </div>
+        <div>
+          DrawBox
+        </div>
+      </div>
     </div>
   );
 }
