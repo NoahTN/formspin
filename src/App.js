@@ -1,5 +1,7 @@
 import logo from './logo.svg';
 import './App.scss';
+import ModelViewer from './ModelViewer';
+import SketchPad from './SketchPad';
 
 function App() {
   return (
@@ -19,12 +21,8 @@ function App() {
         </a>
       </header>
       <div className="main">
-        <div>
-          ViewBox
-        </div>
-        <div>
-          DrawBox
-        </div>
+        <ModelViewer/>
+        <SketchPad/>
       </div>
     </div>
   );
