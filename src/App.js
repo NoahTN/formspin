@@ -6,7 +6,7 @@ import SketchPad from './SketchPad';
 function App() {
   return (
     <div className="App">
-      <header className="header">
+      {/* <header className="header">
         <img src={logo} className="logo" alt="logo" />
         <p>
           Edit <code>src/App.js</code> and save to reload.
@@ -19,7 +19,7 @@ function App() {
         >
           Learn React
         </a>
-      </header>
+      </header> */}
       <div className="main">
         <ModelViewer/>
         <SketchPad/>
