@@ -1,6 +1,18 @@
 import { Component } from "react";
 import * as THREE from 'three';
 
+class Rotator extends Component {
+
+}
+
+class Randomizer extends Component {
+
+}
+
+class Settings extends Component {
+  
+}
+
 class ModelViewer extends Component {
    componentDidMount() {
       // === THREE.JS CODE START ===
