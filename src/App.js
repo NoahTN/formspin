@@ -1,7 +1,7 @@
 import logo from './logo.svg';
 import './App.scss';
-import ModelViewer from './ModelViewer';
-import SketchPad from './SketchPad';
+import ModelViewer from './ModelViewer/ModelViewer';
+import SketchPad from './SketchPad/SketchPad';
 
 function App() {
   return (

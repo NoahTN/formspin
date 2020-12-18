@@ -1,13 +1,7 @@
 import { Component } from "react";
 import * as THREE from 'three';
-
-class Rotator extends Component {
-
-}
-
-class Randomizer extends Component {
-
-}
+import Randomizer from './randomizer';
+import Rotator from './randomizer';
 
 class Settings extends Component {
   
