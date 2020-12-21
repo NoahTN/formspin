@@ -1,6 +1,6 @@
 import { Component } from "react";
 import * as THREE from 'three';
-import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls.js';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 class Rotator extends Component {
    componentDidMount() {
@@ -10,7 +10,7 @@ class Rotator extends Component {
       this.renderer = new THREE.WebGLRenderer({ antialias: true });
       this.renderer.setSize( 650, 650 );
       this.mount.appendChild(this.renderer.domElement);
-      this.controls = new TrackballControls( this.camera, this.renderer.domElement );
+      this.controls = new OrbitControls( this.camera, this.renderer.domElement );
       this.controls.target.set( 0, 0, 0 )
       const geometry = new THREE.BoxGeometry( 1, 1, 1 );
       const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
