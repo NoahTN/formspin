@@ -1,13 +1,12 @@
-import { Component } from "react";
+import { Component } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import ViewerSettings from './ViewerSettings';
 
 class Rotator extends Component {
    constructor() {
       super();
-      this.state = {
-         name: "model"
-      };
+      this.state = {};
       this.onChangeValue = this.onChangeValue.bind(this);
    }
 
@@ -20,21 +19,23 @@ class Rotator extends Component {
       this.mount.appendChild(this.renderer.domElement);
       this.controls = new OrbitControls( this.camera, this.renderer.domElement );
       this.controls.target.set( 0, 0, 0 )
-      
+      // Create initial geometries
       this.currentIdx = 1;
-      this.material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+      this.material = new THREE.MeshNormalMaterial();
       this.geoms = [
-         new THREE.SphereGeometry( 1 ), 
+         new THREE.SphereGeometry( 1, 50, 50 ), 
          new THREE.BoxGeometry( 1, 1, 1 ),  
-         new THREE.CylinderGeometry( 1, 1, 1 )
+         new THREE.CylinderGeometry( 1, 1, 1, 50 )
       ];
+      // Create meshes and corresponding outlines
       this.meshes = []
       this.lines = []
       for(let i = 0; i < 3; i++) {
          this.meshes[i] = new THREE.Mesh( this.geoms[i], this.material );
-         this.lines.push(new THREE.LineSegments(new THREE.EdgesGeometry(this.geoms[i]), new THREE.LineBasicMaterial({color: 0x00000})))
-         this.meshes[i].visible = i==1 ? true : false;
-         this.lines[i].visible = i==1 ? true : false;
+         this.lines.push(new THREE.Mesh(this.geoms[i], new THREE.MeshBasicMaterial( {color: 0x000ff, side: THREE.BackSide} )));
+         this.lines[i].scale.multiplyScalar(0);
+         this.lines[i].visible = i===1 ? true : false;
+         this.meshes[i].visible = i===1 ? true : false;
          this.scene.add(this.meshes[i]);
          this.scene.add(this.lines[i]);
       }
@@ -60,10 +61,6 @@ class Rotator extends Component {
    animate = () => {
       this.controls.update();  
       this.frameId = window.requestAnimationFrame(this.animate)
-      this.renderScene()
-   }
-
-   renderScene = () => {
       this.renderer.render(this.scene, this.camera)
    }
 
@@ -74,7 +71,6 @@ class Rotator extends Component {
       this.meshes[newIdx].visible = true;
       this.lines[newIdx].visible = true;
       this.currentIdx = newIdx;
-      
    }
 
    render() {
@@ -82,11 +78,9 @@ class Rotator extends Component {
          <div id="rotator">
             <div id="rotator-canvas" ref={ (mount) => { this.mount = mount }}>
             </div>
-            <div id="rotator-settings" onChange={this.onChangeValue}>
-               <input type="radio" value="0" name="Model"/>Sphere
-               <input type="radio" value="1" name="Model" defaultChecked/>Cube
-               <input type="radio" value="2" name="Model"/>Cylinder
-            </div>
+            <ViewerSettings mode="1" onChange={this.onChangeValue}/>
+
+            
          </div>
       )
    }

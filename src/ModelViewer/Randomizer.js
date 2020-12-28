@@ -1,4 +1,4 @@
-import { Component } from "react";
+import { Component } from 'react';
 import * as THREE from 'three';
 
 class Randomizer extends Component {
