@@ -6,8 +6,6 @@ import ViewerSettings from './ViewerSettings';
 class Rotator extends Component {
    constructor() {
       super();
-      this.state = {};
-      this.onChangeValue = this.onChangeValue.bind(this);
    }
 
    componentDidMount() {
@@ -64,7 +62,7 @@ class Rotator extends Component {
       this.renderer.render(this.scene, this.camera)
    }
 
-   onChangeValue(event) {
+   onModelChange(event) {
       const newIdx = parseInt(event.target.value);
       this.meshes[this.currentIdx].visible = false;
       this.lines[this.currentIdx].visible = false;
@@ -73,12 +71,19 @@ class Rotator extends Component {
       this.currentIdx = newIdx;
    }
 
+   onSizeChange(sizes) {
+      for(let i = 0; i < 3; i++) {
+         this.meshes[i].scale.set(...sizes);
+         this.lines[i].scale.set(...sizes);
+      }
+   }
+
    render() {
       return (
          <div id="rotator">
             <div id="rotator-canvas" ref={ (mount) => { this.mount = mount }}>
             </div>
-            <ViewerSettings mode="1" onChange={this.onChangeValue}/>
+            <ViewerSettings mode="1" onModelChange={this.onModelChange.bind(this)} onSizeChange={this.onSizeChange.bind(this)}/>
 
             
          </div>
