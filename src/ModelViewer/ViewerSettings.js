@@ -6,6 +6,7 @@ class ViewerSettings extends Component {
    constructor(props) {
       super(props);
       this.xSize = this.ySize = this.zSize = 1;
+      this.xRot = this.yRot = this.zRot = 0;
    }
 
    onModelChange(event) {
@@ -25,12 +26,24 @@ class ViewerSettings extends Component {
       this.props.onSizeChange([this.xSize, this.ySize, this.zSize]);
    }
    
-   onPosChange(event) {
+   // onPosChange(event) {
 
+   // }
+
+   onXRotChange(event) {
+      let value=event.target.value;
+      this.xRot = value;
+      this.props.onRotChange([this.xRot, this.yRot, this.zRot]);
    }
-
-   onRotChange(event) {
-      
+   onYRotChange(event) {
+      let value=event.target.value;
+      this.yRot = value;
+      this.props.onRotChange([this.xRot, this.yRot, this.zRot]);
+   }
+   onZRotChange(event) {
+      let value=event.target.value;
+      this.zRot = value;
+      this.props.onRotChange([this.xRot, this.yRot, this.zRot]);
    }
 
    render() {
@@ -41,15 +54,15 @@ class ViewerSettings extends Component {
                <Slider onChange={this.onYSizeChange.bind(this)} defaultValue={1} max={10}/>
                <Slider onChange={this.onZSizeChange.bind(this)} defaultValue={1} max={10}/>
             </div>
-            <div id="pos-inputs">
+            {/* <div id="pos-inputs">
                <input type="text"/>
                <input type="text"/>
                <input type="text"/>
-            </div>
+            </div> */}
             <div id="rot-input">
-               <input type="text"/>
-               <input type="text"/>
-               <input type="text"/>
+               <input type="number" onChange={this.onXRotChange.bind(this)} defaultValue={0}/>
+               <input type="number" onChange={this.onYRotChange.bind(this)} defaultValue={0}/>
+               <input type="number" onChange={this.onZRotChange.bind(this)} defaultValue={0}/>
             </div>
          </div>
          

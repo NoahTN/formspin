@@ -4,9 +4,6 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import ViewerSettings from './ViewerSettings';
 
 class Rotator extends Component {
-   constructor() {
-      super();
-   }
 
    componentDidMount() {
       this.scene = new THREE.Scene();
@@ -78,12 +75,27 @@ class Rotator extends Component {
       }
    }
 
+   onRotChange(rots) {
+      console.log(rots);
+      rots = rots.map(r => THREE.Math.degToRad(r));
+      console.log(rots);
+      for(let i = 0; i < 3; i++) {
+         this.meshes[i].rotation.set(...rots);
+         this.lines[i].rotation.set(...rots);
+      }
+   }
+
    render() {
       return (
          <div id="rotator">
             <div id="rotator-canvas" ref={ (mount) => { this.mount = mount }}>
             </div>
-            <ViewerSettings mode="1" onModelChange={this.onModelChange.bind(this)} onSizeChange={this.onSizeChange.bind(this)}/>
+            <ViewerSettings 
+               mode="1" 
+               onModelChange={this.onModelChange.bind(this)} 
+               onSizeChange={this.onSizeChange.bind(this)}
+               onRotChange={this.onRotChange.bind(this)}
+            />
 
             
          </div>
