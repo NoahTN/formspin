@@ -4,15 +4,28 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import ViewerSettings from './ViewerSettings';
 
 class Rotator extends Component {
+   constructor(props) {
+      super(props);
+      this.state = {
+         objRot: [0, 0, 0],
+         cameraPos: [0, 0, 4],
+      }
+      this.onModelChange = this.onModelChange.bind(this);
+      this.onScaleChange = this.onScaleChange.bind(this);
+      this.onPosChange = this.onPosChange.bind(this);
+      this.onRotChange = this.onRotChange.bind(this);
+   }
+
 
    componentDidMount() {
       this.scene = new THREE.Scene();
       this.camera = new THREE.PerspectiveCamera( 75, 1/*window.innerWidth/window.innerHeight*/, 0.1, 1000 );
-      this.camera.position.z = 4;
+      this.camera.position.setComponent(2, 4);
       this.renderer = new THREE.WebGLRenderer({ antialias: true });
       this.renderer.setSize( 650, 650 );
       this.mount.appendChild(this.renderer.domElement);
       this.controls = new OrbitControls( this.camera, this.renderer.domElement );
+      this.controls.addEventListener('change', this.renderScene);
       this.controls.target.set( 0, 0, 0 )
       // Create initial geometries
       this.currentIdx = 1;
@@ -34,55 +47,49 @@ class Rotator extends Component {
          this.scene.add(this.meshes[i]);
          this.scene.add(this.lines[i]);
       }
-      
-      this.start();
+      this.renderScene();
    }
 
-   componentWillUnmount(){
-      this.stop()
-      this.mount.removeChild(this.renderer.domElement)
-   }
-   
-   start = () => {
-      if (!this.frameId) {
-         this.frameId = requestAnimationFrame(this.animate)
-      }
-   }
-
-   stop = () => {
-      cancelAnimationFrame(this.frameId)
-   }
-
-   animate = () => {
-      this.controls.update();  
-      this.frameId = window.requestAnimationFrame(this.animate)
-      this.renderer.render(this.scene, this.camera)
+   renderScene = () => {
+      this.setState({
+         objRot: this.state.objRot,
+         cameraPos: this.state.cameraPos
+      });
+      this.renderer.render(this.scene, this.camera);
    }
 
    onModelChange(event) {
       const newIdx = parseInt(event.target.value);
+      this.meshes[newIdx].scale.set(...this.meshes[this.currentIdx].scale.toArray());
+      this.meshes[newIdx].position.set(...this.meshes[this.currentIdx].position.toArray());
+      this.meshes[newIdx].rotation.set(...this.meshes[this.currentIdx].rotation.toArray());
+      this.lines[newIdx].scale.set(...this.lines[this.currentIdx].scale.toArray());
+      this.lines[newIdx].position.set(...this.meshes[this.currentIdx].position.toArray());
+      this.meshes[newIdx].rotation.set(...this.meshes[this.currentIdx].rotation.toArray());
+
       this.meshes[this.currentIdx].visible = false;
       this.lines[this.currentIdx].visible = false;
       this.meshes[newIdx].visible = true;
       this.lines[newIdx].visible = true;
       this.currentIdx = newIdx;
+      this.renderScene();
    }
 
-   onSizeChange(sizes) {
-      for(let i = 0; i < 3; i++) {
-         this.meshes[i].scale.set(...sizes);
-         this.lines[i].scale.set(...sizes);
-      }
+   onScaleChange(axis, value) {
+      this.meshes[this.currentIdx].scale.setComponent(axis, value);
+      this.renderScene();
    }
 
-   onRotChange(rots) {
-      console.log(rots);
-      rots = rots.map(r => THREE.Math.degToRad(r));
-      console.log(rots);
-      for(let i = 0; i < 3; i++) {
-         this.meshes[i].rotation.set(...rots);
-         this.lines[i].rotation.set(...rots);
-      }
+   onPosChange(axis, value) {
+      this.camera.position.setComponent(axis, value);
+      this.camera.position.toArray(this.state.cameraPos);
+      this.controls.update();
+   }
+
+   onRotChange(axis, value) {
+      this.state.objRot[axis] = THREE.Math.degToRad(value);
+      this.meshes[this.currentIdx].rotation.set(...this.state.objRot);
+      this.renderScene();
    }
 
    render() {
@@ -92,9 +99,12 @@ class Rotator extends Component {
             </div>
             <ViewerSettings 
                mode="1" 
-               onModelChange={this.onModelChange.bind(this)} 
-               onSizeChange={this.onSizeChange.bind(this)}
-               onRotChange={this.onRotChange.bind(this)}
+               onModelChange={this.onModelChange}
+               objRot={this.state.objRot} 
+               cameraPos={this.state.cameraPos}
+               onScaleChange={this.onScaleChange}
+               onPosChange={this.onPosChange}
+               onRotChange={this.onRotChange}
             />
 
             

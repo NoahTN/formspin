@@ -1,13 +1,23 @@
 import { Component } from 'react';
 import ReactDOM from "react-dom";
 import CanvasDraw from "react-canvas-draw";
+import { SketchPicker } from 'react-color';
 import Slider, { Range } from 'rc-slider';
 import 'rc-slider/assets/index.css';
 
 class SketchPad extends Component{
    constructor(props) {
       super(props);
-      this.state = {brushSize: 5};
+      this.state = {
+         brushSize: 5,
+         brushColor: "444",
+      };
+   }
+
+   onBrushColorChange(value) {
+      this.setState({
+         brushColor: value
+      })
    }
 
    onBrushSizeChange(value) {
@@ -26,6 +36,7 @@ class SketchPad extends Component{
             lazyRadius={0}
             hideGrid={true}
             brushRadius={this.state.brushSize}
+            brushColor={this.state.brushColor}
             
          />
          {/* Brush Size */}
@@ -33,9 +44,11 @@ class SketchPad extends Component{
          {/* Color Picker */}
          <Slider defaultValue={1} max={15}/>
          {/* Eraser
-            Clear Canvas
-            Undo
             */}
+         <SketchPicker />
+         <button onClick={() => {this.onBrushColorChange.bind(this)("#fff"); this.onBrushSizeChange.bind(this)(12);}}>
+            "Eraser"
+         </button>
          <button onClick={() => {this.drawCanvas.undo()}}>
             Undo
          </button>
