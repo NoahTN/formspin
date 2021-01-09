@@ -10,6 +10,7 @@ class RotatorSettings extends Component {
       this.scaleXHandler = this.scaleXHandler.bind(this);
       this.scaleYHandler = this.scaleYHandler.bind(this);
       this.scaleZHandler = this.scaleZHandler.bind(this);
+      this.modelChangeHandler = this.modelChangeHandler.bind(this);
    }
 
    scaleXHandler(value) {
@@ -43,20 +44,20 @@ class RotatorSettings extends Component {
                <Slider onChange={this.scaleZHandler} defaultValue={1} max={10}/>
             </div>
             <div id="pos-input">
-               <input type="number" onChange={(e) => this.posHandler(0, e)}/>
-               <input type="number" onChange={(e) => this.posHandler(1, e)}/>
-               <input type="number" onChange={(e) => this.posHandler(2, e)}/>
-               <button>Reset</button>
+               <input type="number" value={this.props.objPos[0]} onChange={(e) => this.posHandler(0, e)} min={-3.6} max={3.6}/>
+               <input type="number" value={this.props.objPos[1]} onChange={(e) => this.posHandler(1, e)} min={-3.6} max={3.6}/>
+               <input type="number" value={this.props.objPos[2]} onChange={(e) => this.posHandler(2, e)} min={-3.6} max={3.6}/>
+               <button onClick={(e) => this.posHandler(-1, e)}>Reset</button>
             </div>
             <div id="rot-input">
-               <input type="number" onChange={(e) => this.rotHandler(0, e)}/>
-               <input type="number" onChange={(e) => this.rotHandler(1, e)}/>
-               <input type="number" onChange={(e) => this.rotHandler(2, e)}/>
-               <button>Reset</button>
+               <input type="number" value={MathUtils.radToDeg(this.props.objRot[0])} onChange={(e) => this.rotHandler(0, e)}/>
+               <input type="number" value={MathUtils.radToDeg(this.props.objRot[1])} onChange={(e) => this.rotHandler(1, e)}/>
+               <input type="number" value={MathUtils.radToDeg(this.props.objRot[2])} onChange={(e) => this.rotHandler(2, e)}/>
+               <button onClick={(e) => this.rotHandler(-1, e)}>Reset</button>
             </div>
             <button>Reset Camera</button>
          </div>
-         <div onChange={this.props.onModelChange}>
+         <div onChange={this.modelChangeHandler}>
             <input type="radio" value="0" name="Model"/>Sphere
             <input type="radio" value="1" name="Model" defaultChecked/>Cube
             <input type="radio" value="2" name="Model"/>Cylinder

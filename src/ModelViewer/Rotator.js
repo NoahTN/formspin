@@ -1,11 +1,18 @@
 import { Component } from 'react';
 import * as THREE from 'three';
-import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
+import { DragControls } from 'three/examples/jsm/controls/DragControls.js';
 import RotatorSettings from './RotatorSettings';
 
+const RESET = -1;
+
 class Rotator extends Component {
+   
    constructor(props) {
       super(props);
+      this.state = {
+         objPos: [0, 0, 0],
+         objRot: [0, 0, 0, "XYZ"]
+      }
       this.changeModel = this.changeModel.bind(this);
       this.changeScale = this.changeScale.bind(this);
       this.changePos = this.changePos.bind(this);
@@ -21,8 +28,6 @@ class Rotator extends Component {
 
       this.camera = new THREE.PerspectiveCamera( 75, 1/*window.innerWidth/window.innerHeight*/, 0.1, 1000 );
       this.camera.position.setComponent(2, 4);
-      this.controls = new TransformControls( this.camera, this.renderer.domElement );
-      this.controls.addEventListener('change', this.renderScene);
 
       // Create initial geometries
       this.currentIdx = 1;
@@ -33,32 +38,41 @@ class Rotator extends Component {
          new THREE.CylinderGeometry( 1, 1, 1, 50 )
       ];
       // Create meshes and corresponding outlines
-      this.meshes = []
-      this.lines = []
+      this.meshes = [];
+      this.lines = [];
+      this.controls = [];
       for(let i = 0; i < 3; i++) {
-         this.meshes[i] = new THREE.Mesh( this.geoms[i], this.material );
+         this.meshes.push(new THREE.Mesh( this.geoms[i], this.material ));
          this.meshes[i].visible = i===1 ? true : false;
          this.scene.add(this.meshes[i]);
+
+         this.controls.push(new DragControls( [this.meshes[i]], this.camera, this.renderer.domElement ));
+         this.controls[i].addEventListener('drag', this.renderScene);
+         this.controls[i].deactivate();
       }
-      this.controls.attach(this.meshes[1]);
-      this.scene.add(this.controls);
+      this.controls[1].activate();
       this.renderScene();
    }
 
    renderScene = () => {
-      // relay state values here to input in child component
+      this.setState({
+         objPos: this.meshes[this.currentIdx].position.toArray(),
+         objRot: this.meshes[this.currentIdx].rotation.toArray()
+      });
       this.renderer.render(this.scene, this.camera);
    }
 
-   changeModel(event) {
-      const newIdx = parseInt(event.target.value);
-      this.meshes[newIdx].scale.set(...this.meshes[this.currentIdx].scale.toArray());
-      this.meshes[newIdx].position.set(...this.meshes[this.currentIdx].position.toArray());
-      this.meshes[newIdx].rotation.set(...this.meshes[this.currentIdx].rotation.toArray());
+   changeModel(idx) {
+      const newIdx = parseInt(idx);
+      this.meshes[newIdx].scale.copy(this.meshes[this.currentIdx].scale);
+      this.meshes[newIdx].position.copy(this.meshes[this.currentIdx].position);
+      this.meshes[newIdx].rotation.copy(this.meshes[this.currentIdx].rotation);
 
       this.meshes[this.currentIdx].visible = false;
+      this.meshes[newIdx].visible = true;
+      this.controls[this.currentIdx].deactivate();
+      this.controls[newIdx].activate();
       this.currentIdx = newIdx;
-      this.controls.attach(this.meshes[newIdx]);
       this.renderScene();
    }
 
@@ -68,17 +82,26 @@ class Rotator extends Component {
    }
 
    changePos(axis, value) {
-      this.meshes[this.currentIdx].position.setComponent(axis, value);
-      // this.camera.position.set(0, 0, 4);
-      // this.camera.rotation.set(0, 0, 0, "XYZ");
-      // this.controls.update();
+      if(axis === RESET) {
+         this.meshes[this.currentIdx].position.set(0, 0, 0);
+      }
+      else {
+         this.meshes[this.currentIdx].position.setComponent(axis, value);
+      }
       this.renderScene();
    }
 
    changeRot(axis, value) {
-      let newRot = this.meshes[this.currentIdx].rotation.toArray();
-      newRot[axis] = THREE.Math.degToRad(value);
-      this.meshes[this.currentIdx].rotation.set(...newRot);
+      if(axis === RESET) {
+         this.meshes[this.currentIdx].rotation.set(0, 0, 0, 'XYZ');
+      }
+      else {
+         
+         let newRot = this.meshes[this.currentIdx].rotation.toArray();
+         newRot[axis] = THREE.Math.degToRad(value);
+         this.meshes[this.currentIdx].rotation.set(...newRot);
+      }
+
       this.renderScene();
    }
 
@@ -89,6 +112,8 @@ class Rotator extends Component {
             </div>
             <RotatorSettings 
                // different class for randomizer but same css class
+               objPos={this.state.objPos}
+               objRot={this.state.objRot}
                changeModel={this.changeModel}
                changeScale={this.changeScale}
                changePos={this.changePos}
