@@ -46,7 +46,7 @@ class RotatorSettings extends Component {
             <div id="pos-input">
                <input type="number" value={this.props.objPos[0]} onChange={(e) => this.posHandler(0, e)} min={-3.6} max={3.6}/>
                <input type="number" value={this.props.objPos[1]} onChange={(e) => this.posHandler(1, e)} min={-3.6} max={3.6}/>
-               <input type="number" value={this.props.objPos[2]} onChange={(e) => this.posHandler(2, e)} min={-3.6} max={3.6}/>
+               <input type="number" value={this.props.objPos[2]} onChange={(e) => this.posHandler(2, e)}/>
                <button onClick={(e) => this.posHandler(-1, e)}>Reset</button>
             </div>
             <div id="rot-input">

@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import * as THREE from 'three';
-import { DragControls } from 'three/examples/jsm/controls/DragControls.js';
+import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
 import RotatorSettings from './RotatorSettings';
 
 const RESET = -1;
@@ -18,7 +18,6 @@ class Rotator extends Component {
       this.changePos = this.changePos.bind(this);
       this.changeRot = this.changeRot.bind(this);
    }
-
 
    componentDidMount() {
       this.scene = new THREE.Scene();
@@ -40,18 +39,20 @@ class Rotator extends Component {
       // Create meshes and corresponding outlines
       this.meshes = [];
       this.lines = [];
-      this.controls = [];
       for(let i = 0; i < 3; i++) {
          this.meshes.push(new THREE.Mesh( this.geoms[i], this.material ));
-         this.meshes[i].visible = i===1 ? true : false;
+         this.meshes[i].layers.set(1);
          this.scene.add(this.meshes[i]);
-
-         this.controls.push(new DragControls( [this.meshes[i]], this.camera, this.renderer.domElement ));
-         this.controls[i].addEventListener('drag', this.renderScene);
-         this.controls[i].deactivate();
       }
-      this.controls[1].activate();
+      this.meshes[1].layers.set(0);
+      this.controls = new TransformControls(this.camera, this.renderer.domElement);
+      this.controls.attach(this.meshes[1]);
+      this.controls.addEventListener("change", this.renderScene);
+      this.scene.add(this.controls);
+      this.renderer.domElement.addEventListener('mouseover', this.onCanvasMouseIn, false);
+      this.renderer.domElement.addEventListener('mouseout', this.onCanvasMouseOut, false);
       this.renderScene();
+      
    }
 
    renderScene = () => {
@@ -62,17 +63,24 @@ class Rotator extends Component {
       this.renderer.render(this.scene, this.camera);
    }
 
+   onCanvasMouseIn = (event) => {
+      this.controls.showX = this.controls.showY = this.controls.showZ = true;
+   }
+
+   onCanvasMouseOut = (event) => {
+      this.controls.showX = this.controls.showY = this.controls.showZ = false;
+   }
+
    changeModel(idx) {
       const newIdx = parseInt(idx);
       this.meshes[newIdx].scale.copy(this.meshes[this.currentIdx].scale);
       this.meshes[newIdx].position.copy(this.meshes[this.currentIdx].position);
       this.meshes[newIdx].rotation.copy(this.meshes[this.currentIdx].rotation);
 
-      this.meshes[this.currentIdx].visible = false;
-      this.meshes[newIdx].visible = true;
-      this.controls[this.currentIdx].deactivate();
-      this.controls[newIdx].activate();
+      this.meshes[this.currentIdx].layers.set(1);
+      this.meshes[newIdx].layers.set(0);
       this.currentIdx = newIdx;
+      this.controls.attach(this.meshes[newIdx]);
       this.renderScene();
    }
 
