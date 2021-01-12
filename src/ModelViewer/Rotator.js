@@ -2,6 +2,7 @@ import { Component } from 'react';
 import * as THREE from 'three';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
 import RotatorSettings from './RotatorSettings';
+import './Rotator.scss';
 
 const RESET = -1;
 
@@ -13,6 +14,7 @@ class Rotator extends Component {
          objPos: [0, 0, 0],
          objRot: [0, 0, 0, "XYZ"]
       }
+
       this.changeModel = this.changeModel.bind(this);
       this.changeScale = this.changeScale.bind(this);
       this.changePos = this.changePos.bind(this);
@@ -51,8 +53,8 @@ class Rotator extends Component {
       this.scene.add(this.controls);
       this.renderer.domElement.addEventListener('mouseover', this.onCanvasMouseIn, false);
       this.renderer.domElement.addEventListener('mouseout', this.onCanvasMouseOut, false);
+      document.body.addEventListener('keydown', this.handleKeyDown);
       this.renderScene();
-      
    }
 
    renderScene = () => {
@@ -69,6 +71,21 @@ class Rotator extends Component {
 
    onCanvasMouseOut = (event) => {
       this.controls.showX = this.controls.showY = this.controls.showZ = false;
+   }
+
+   handleKeyDown = (event) => {
+      if(event.key === "r" || event.key === "R") {
+         this.toggleRotate();
+      }
+   }
+
+   toggleRotate = (event) => {
+      if(this.controls.getMode() === "rotate") {
+         this.controls.setMode("translate");
+      }
+      else {
+         this.controls.setMode("rotate");
+      }
    }
 
    changeModel(idx) {
@@ -117,6 +134,7 @@ class Rotator extends Component {
       return (
          <div id="rotator">
             <div id="rotator-canvas" ref={ (mount) => { this.mount = mount }}>
+               <p id="hint-mode">Press "r" to toggle modes</p>
             </div>
             <RotatorSettings 
                // different class for randomizer but same css class

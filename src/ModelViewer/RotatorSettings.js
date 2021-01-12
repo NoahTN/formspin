@@ -55,7 +55,7 @@ class RotatorSettings extends Component {
                <input type="number" value={MathUtils.radToDeg(this.props.objRot[2])} onChange={(e) => this.rotHandler(2, e)}/>
                <button onClick={(e) => this.rotHandler(-1, e)}>Reset</button>
             </div>
-            <button>Reset Camera</button>
+       
          </div>
          <div onChange={this.modelChangeHandler}>
             <input type="radio" value="0" name="Model"/>Sphere
