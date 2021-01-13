@@ -1,8 +1,11 @@
 import { Component } from 'react';
 import * as THREE from 'three';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
-import RotatorSettings from './RotatorSettings';
+import Slider from 'rc-slider';
 import './Rotator.scss';
+import 'rc-slider/assets/index.css';
+
+
 
 const RESET = -1;
 
@@ -14,22 +17,9 @@ class Rotator extends Component {
          objPos: [0, 0, 0],
          objRot: [0, 0, 0, "XYZ"]
       }
-
-      this.changeModel = this.changeModel.bind(this);
-      this.changeScale = this.changeScale.bind(this);
-      this.changePos = this.changePos.bind(this);
-      this.changeRot = this.changeRot.bind(this);
    }
 
    componentDidMount() {
-      this.scene = new THREE.Scene();
-      this.renderer = new THREE.WebGLRenderer({ antialias: true });
-      this.renderer.setSize( 650, 650 );
-      this.mount.appendChild(this.renderer.domElement);
-
-      this.camera = new THREE.PerspectiveCamera( 75, 1/*window.innerWidth/window.innerHeight*/, 0.1, 1000 );
-      this.camera.position.setComponent(2, 4);
-
       // Create initial geometries
       this.currentIdx = 1;
       this.material = new THREE.MeshNormalMaterial();
@@ -44,15 +34,15 @@ class Rotator extends Component {
       for(let i = 0; i < 3; i++) {
          this.meshes.push(new THREE.Mesh( this.geoms[i], this.material ));
          this.meshes[i].layers.set(1);
-         this.scene.add(this.meshes[i]);
+         this.props.scene.add(this.meshes[i]);
       }
       this.meshes[1].layers.set(0);
-      this.controls = new TransformControls(this.camera, this.renderer.domElement);
+      this.controls = new TransformControls(this.props.camera, this.props.renderer.domElement);
       this.controls.attach(this.meshes[1]);
       this.controls.addEventListener("change", this.renderScene);
-      this.scene.add(this.controls);
-      this.renderer.domElement.addEventListener('mouseover', this.onCanvasMouseIn, false);
-      this.renderer.domElement.addEventListener('mouseout', this.onCanvasMouseOut, false);
+      this.props.scene.add(this.controls);
+      this.props.renderer.domElement.addEventListener('mouseover', this.onCanvasMouseIn, false);
+      this.props.renderer.domElement.addEventListener('mouseout', this.onCanvasMouseOut, false);
       document.body.addEventListener('keydown', this.handleKeyDown);
       this.renderScene();
    }
@@ -62,7 +52,7 @@ class Rotator extends Component {
          objPos: this.meshes[this.currentIdx].position.toArray(),
          objRot: this.meshes[this.currentIdx].rotation.toArray()
       });
-      this.renderer.render(this.scene, this.camera);
+      this.props.renderer.render(this.props.scene, this.props.camera);
    }
 
    onCanvasMouseIn = (event) => {
@@ -88,8 +78,8 @@ class Rotator extends Component {
       }
    }
 
-   changeModel(idx) {
-      const newIdx = parseInt(idx);
+   changeModel = (event) => {
+      const newIdx = parseInt(event.target.value);
       this.meshes[newIdx].scale.copy(this.meshes[this.currentIdx].scale);
       this.meshes[newIdx].position.copy(this.meshes[this.currentIdx].position);
       this.meshes[newIdx].rotation.copy(this.meshes[this.currentIdx].rotation);
@@ -100,30 +90,29 @@ class Rotator extends Component {
       this.controls.attach(this.meshes[newIdx]);
       this.renderScene();
    }
-
-   changeScale(axis, value) {
+   
+   changeScale = (axis, value) =>{
       this.meshes[this.currentIdx].scale.setComponent(axis, value);
       this.renderScene();
    }
 
-   changePos(axis, value) {
+   changePos = (axis, event) =>{
       if(axis === RESET) {
          this.meshes[this.currentIdx].position.set(0, 0, 0);
       }
       else {
-         this.meshes[this.currentIdx].position.setComponent(axis, value);
+         this.meshes[this.currentIdx].position.setComponent(axis, event.target.value);
       }
       this.renderScene();
    }
 
-   changeRot(axis, value) {
+   changeRot = (axis, event) =>{
       if(axis === RESET) {
          this.meshes[this.currentIdx].rotation.set(0, 0, 0, 'XYZ');
       }
       else {
-         
          let newRot = this.meshes[this.currentIdx].rotation.toArray();
-         newRot[axis] = THREE.Math.degToRad(value);
+         newRot[axis] = THREE.Math.degToRad(event.target.value);
          this.meshes[this.currentIdx].rotation.set(...newRot);
       }
 
@@ -131,22 +120,32 @@ class Rotator extends Component {
    }
 
    render() {
-      return (
-         <div id="rotator">
-            <div id="rotator-canvas" ref={ (mount) => { this.mount = mount }}>
-               <p id="hint-mode">Press "r" to toggle modes</p>
+      return <div id="rotator-settings" className="settings-panel">
+         <div id="scale-sliders">
+            <div>
+               <Slider onChange={(e) => this.changeScale(0, e)} defaultValue={1} max={10}/>
+               <Slider onChange={(e) => this.changeScale(1, e)} defaultValue={1} max={10}/>
+               <Slider onChange={(e) => this.changeScale(2, e)} defaultValue={1} max={10}/>
             </div>
-            <RotatorSettings 
-               // different class for randomizer but same css class
-               objPos={this.state.objPos}
-               objRot={this.state.objRot}
-               changeModel={this.changeModel}
-               changeScale={this.changeScale}
-               changePos={this.changePos}
-               changeRot={this.changeRot}
-            />
+            <div id="pos-input">
+               <input type="number" value={this.state.objPos[0]} onChange={(e) => this.changePos(0, e)} min={-3.6} max={3.6}/>
+               <input type="number" value={this.state.objPos[1]} onChange={(e) => this.changePos(1, e)} min={-3.6} max={3.6}/>
+               <input type="number" value={this.state.objPos[2]} onChange={(e) => this.changePos(2, e)}/>
+               <button onClick={(e) => this.changePos(RESET, e)}>Reset</button>
+            </div>
+            <div id="rot-input">
+               <input type="number" value={THREE.Math.radToDeg(this.state.objRot[0])} onChange={(e) => this.changeRot(0, e)}/>
+               <input type="number" value={THREE.Math.radToDeg(this.state.objRot[1])} onChange={(e) => this.changeRot(1, e)}/>
+               <input type="number" value={THREE.Math.radToDeg(this.state.objRot[2])} onChange={(e) => this.changeRot(2, e)}/>
+               <button onClick={(e) => this.changeRot(RESET, e)}>Reset</button>
+            </div>
          </div>
-      )
+         <div onChange={this.changeModel}>
+            <input type="radio" value="0" name="Model"/>Sphere
+            <input type="radio" value="1" name="Model" defaultChecked/>Cube
+            <input type="radio" value="2" name="Model"/>Cylinder
+         </div>
+      </div>
    }
 }
 
