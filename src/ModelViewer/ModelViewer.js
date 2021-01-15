@@ -18,6 +18,9 @@ class ModelViewer extends Component {
     this.renderer.setSize( 650, 650 );
     this.camera = new THREE.PerspectiveCamera( 75, 1/*window.innerWidth/window.innerHeight*/, 0.1, 1000 );
     this.camera.position.setComponent(2, 4);
+
+    // Randomizer debugging purposes
+    this.camera.layers.set(2);
     
   }
 
