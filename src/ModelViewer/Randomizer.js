@@ -9,7 +9,8 @@ class Randomizer extends Component {
    constructor(props) {
       super(props)
       this.lowerLimit = 1;
-      this.upperLimit = 1;
+      this.upperLimit = 4;
+      this.curMeshes = [];
    }
 
    componentDidMount() {
@@ -20,10 +21,16 @@ class Randomizer extends Component {
    }
 
    randomize = () => {
+      for(let i = 0; i < this.curMeshes.length; i++) {
+         this.props.scene.remove(this.curMeshes[i]);
+      }
+      this.curMeshes = [];
       // create random objects based on settings
-      let randCount = this.getRandomIntInclusive(this.lowerLimit, this.upperLimit+3);
+      let randCount = this.getRandomIntInclusive(this.lowerLimit, this.upperLimit);
+      // create new object and store for removal
       for(let i = 0; i < randCount; i++) {
-         this.props.scene.add(this.createRandomObject());
+         this.curMeshes.push(this.createRandomObject())
+         this.props.scene.add(this.curMeshes[i]);
       }
       this.props.renderer.render(this.props.scene, this.props.camera);
       //  display and set timer
@@ -85,10 +92,11 @@ class Randomizer extends Component {
 
    render() {
       return (
-         <div id="randomizer-settings" className="settings-panel">
+         <div id="randomizer-settings" className="settings-panel" style={{display: this.props.settingsMode == 2 ? 'block' : 'none'}}>
             <div>
                <input type="radio" name="test"/>setting1
                <input type="radio" name= "test"/>setting2
+               <button onClick={this.randomize}>Randomize!</button>
             </div>
          </div>
       )

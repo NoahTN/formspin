@@ -13,6 +13,9 @@ const MODE_RAND = 2;
 class ModelViewer extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      settingsMode: 2
+    };
     this.scene = new THREE.Scene();
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer.setSize( 650, 650 );
@@ -34,6 +37,9 @@ class ModelViewer extends Component {
 
   changeViewerMode = (event) => {
     this.camera.layers.set(event.target.value);
+    this.setState({
+      settingsMode: event.target.value
+    });
     this.renderScene();
 
   }
@@ -42,24 +48,25 @@ class ModelViewer extends Component {
     return (
       <div>
         <div id="viewer-canvas" ref={ (mount) => { this.mount = mount }}>
-        {/* hide this on radio switch */}
-            <p id="hint-mode">Press "r" to toggle modes</p> 
+            <p id="hint-mode" style={{display: this.state.settingsMode == 0 ? 'block' : 'none'}}>Press "r" to toggle modes</p> 
         </div>
         <Rotator 
           settings={settings}
           scene={this.scene}
           renderer={this.renderer}
           camera={this.camera}
+          settingsMode={this.state.settingsMode}
         />
-        <Randomizer
+        <Randomizer 
           settings={settings}
           scene={this.scene}
           renderer={this.renderer}
           camera={this.camera}
+          settingsMode={this.state.settingsMode}
         />
         <div onChange={this.changeViewerMode}>
-          <input type="radio" value={MODE_ROTATE} name="viewer-mode"  defaultChecked/>Rotator
-          <input type="radio" value={MODE_RAND} name="viewer-mode"/>Randomizer
+          <input type="radio" value={MODE_ROTATE} name="viewer-mode"/>Rotator
+          <input type="radio" value={MODE_RAND} name="viewer-mode" defaultChecked/>Randomizer
         </div>
       </div>
     )
