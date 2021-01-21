@@ -124,19 +124,30 @@ class Rotator extends Component {
          <p id="hint-mode" style={{display: this.props.settingsMode === 0 ? 'block' : 'none'}}>Press "r" to toggle modes</p> 
          <div>
             <div id="scale-sliders">
+               <p>X Scale</p>
                <Slider onChange={(e) => this.changeScale(0, e)} defaultValue={1} max={10}/>
+               <p>Y Scale</p>
                <Slider onChange={(e) => this.changeScale(1, e)} defaultValue={1} max={10}/>
+               <p>Z Scale</p>
                <Slider onChange={(e) => this.changeScale(2, e)} defaultValue={1} max={10}/>
             </div>
             <div id="pos-input">
+               <p>Position</p>
+               <label>X</label>
                <input type="number" value={this.state.objPos[0]} onChange={(e) => this.changePos(0, e)} min={-3.6} max={3.6}/>
+               <label>Y</label>
                <input type="number" value={this.state.objPos[1]} onChange={(e) => this.changePos(1, e)} min={-3.6} max={3.6}/>
+               <label>Z</label>
                <input type="number" value={this.state.objPos[2]} onChange={(e) => this.changePos(2, e)}/>
                <button onClick={(e) => this.changePos(RESET, e)}>Reset</button>
             </div>
             <div id="rot-input">
+               <p>Rotation (Degrees)</p>
+               <label>X</label>
                <input type="number" value={THREE.Math.radToDeg(this.state.objRot[0])} onChange={(e) => this.changeRot(0, e)}/>
+               <label>Y</label>
                <input type="number" value={THREE.Math.radToDeg(this.state.objRot[1])} onChange={(e) => this.changeRot(1, e)}/>
+               <label>Z</label>
                <input type="number" value={THREE.Math.radToDeg(this.state.objRot[2])} onChange={(e) => this.changeRot(2, e)}/>
                <button onClick={(e) => this.changeRot(RESET, e)}>Reset</button>
             </div>

@@ -119,11 +119,12 @@ class Randomizer extends Component {
          <div id="randomizer-settings" className="settings-panel" style={{display: this.props.settingsMode == 2 ? 'block' : 'none'}}>
             <p id="timer" style={{display: this.props.settingsMode === 2 ? 'block' : 'none'}}>60</p> 
             <div id="scale-sliders">
+               <p>Min. Objects</p>
+               <Slider onChange={(e) => this.changeScale(0, e)} defaultValue={1} max={10}/>
+               <p>Max Objects</p>
                <Slider onChange={(e) => this.changeScale(0, e)} defaultValue={1} max={10}/>
             </div>
             <div>
-               <input type="radio" name="test"/>setting1
-               <input type="radio" name= "test"/>setting2
                <button onClick={this.randomize}>Randomize!</button>
             </div>
          </div>

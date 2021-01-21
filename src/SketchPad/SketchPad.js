@@ -39,8 +39,7 @@ class SketchPad extends Component{
             brushColor={this.state.brushColor}
             
          />
-         {/* Brush Size */}
-         <label>Brush Size</label>
+         <p>Brush Size</p>
          <Slider onChange={this.onBrushSizeChange.bind(this)} defaultValue={1} max={15}/>
          {/* Eraser
             */}
