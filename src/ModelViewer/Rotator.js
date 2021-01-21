@@ -121,8 +121,9 @@ class Rotator extends Component {
 
    render() {
       return <div id="rotator-settings" className="settings-panel" style={{display: this.props.settingsMode == 0 ? 'block' : 'none'}}>
-         <div id="scale-sliders">
-            <div>
+         <p id="hint-mode" style={{display: this.props.settingsMode === 0 ? 'block' : 'none'}}>Press "r" to toggle modes</p> 
+         <div>
+            <div id="scale-sliders">
                <Slider onChange={(e) => this.changeScale(0, e)} defaultValue={1} max={10}/>
                <Slider onChange={(e) => this.changeScale(1, e)} defaultValue={1} max={10}/>
                <Slider onChange={(e) => this.changeScale(2, e)} defaultValue={1} max={10}/>

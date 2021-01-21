@@ -36,9 +36,9 @@ class ModelViewer extends Component {
   }
 
   changeViewerMode = (event) => {
-    this.camera.layers.set(event.target.value);
+    this.camera.layers.set(parseInt(event.target.value));
     this.setState({
-      settingsMode: event.target.value
+      settingsMode: parseInt(event.target.value)
     });
     this.renderScene();
 
@@ -48,7 +48,6 @@ class ModelViewer extends Component {
     return (
       <div>
         <div id="viewer-canvas" ref={ (mount) => { this.mount = mount }}>
-            <p id="hint-mode" style={{display: this.state.settingsMode == 0 ? 'block' : 'none'}}>Press "r" to toggle modes</p> 
         </div>
         <Rotator 
           settings={settings}

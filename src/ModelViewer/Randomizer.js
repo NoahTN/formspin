@@ -1,5 +1,7 @@
 import { Component } from 'react';
+import Slider from 'rc-slider';
 import * as THREE from 'three';
+import './Randomizer.scss';
 
 const SPHERE = 0;
 const CUBE = 1;
@@ -11,10 +13,18 @@ class Randomizer extends Component {
       this.lowerLimit = 1;
       this.upperLimit = 4;
       this.curMeshes = [];
+      // TODO: random color
+      this.material = new THREE.MeshBasicMaterial({
+         color: 0x0000ff,
+         polygonOffset: true,
+         polygonOffsetFactor: 1, // positive value pushes polygon further away
+         polygonOffsetUnits: 1
+      });
+      this.frameMaterial = new THREE.LineBasicMaterial( { color: 0xffffff, linewidth: 2 } );
+      this.curvedframeMaterial = new THREE.MeshBasicMaterial( { color: 0x0000ff, side: THREE.BackSide } );
    }
 
    componentDidMount() {
-      this.material = new THREE.MeshNormalMaterial();
       this.randomize();
       // settings maybe on canvas
 
@@ -41,6 +51,7 @@ class Randomizer extends Component {
    createRandomObject = () => {
       const objType = this.getRandomIntInclusive(0, 2);
       let geom;
+
       switch(objType) {
          case SPHERE:
             geom = new THREE.SphereGeometry(
@@ -66,7 +77,7 @@ class Randomizer extends Component {
             );
             break;
       }
-
+      
       const mesh = new THREE.Mesh( geom, this.material );
       mesh.layers.set(2);
       mesh.position.set(
@@ -79,6 +90,19 @@ class Randomizer extends Component {
          this.getRandomNumber(-Math.PI, Math.PI),
          this.getRandomNumber(-Math.PI, Math.PI),
       );
+      
+      let wireframe;
+      if(objType === CUBE) {
+         let lineGeom = new THREE.EdgesGeometry( geom );
+         wireframe =  new THREE.LineSegments( lineGeom, this.frameMaterial );
+      }
+      else { // BUG: Displays as white no matter the material settings
+         wireframe = new THREE.Mesh( geom, this.curvedFrameMaterial );
+         wireframe.scale.multiplyScalar(1.05);
+      }
+      wireframe.layers.set(2);
+      mesh.add( wireframe );
+
       return mesh;
    }
 
@@ -93,6 +117,10 @@ class Randomizer extends Component {
    render() {
       return (
          <div id="randomizer-settings" className="settings-panel" style={{display: this.props.settingsMode == 2 ? 'block' : 'none'}}>
+            <p id="timer" style={{display: this.props.settingsMode === 2 ? 'block' : 'none'}}>60</p> 
+            <div id="scale-sliders">
+               <Slider onChange={(e) => this.changeScale(0, e)} defaultValue={1} max={10}/>
+            </div>
             <div>
                <input type="radio" name="test"/>setting1
                <input type="radio" name= "test"/>setting2
