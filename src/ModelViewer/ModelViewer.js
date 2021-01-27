@@ -17,8 +17,9 @@ class ModelViewer extends Component {
       settingsMode: 2
     };
     this.scene = new THREE.Scene();
-    this.renderer = new THREE.WebGLRenderer({ antialias: true });
+    this.renderer = new THREE.WebGLRenderer( { antialias: true });
     this.renderer.setSize( 650, 650 );
+    this.renderer.setPixelRatio(1.5);
     this.camera = new THREE.PerspectiveCamera( 75, 1/*window.innerWidth/window.innerHeight*/, 0.1, 1000 );
     this.camera.position.setComponent(2, 4);
 
