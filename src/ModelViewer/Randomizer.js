@@ -25,8 +25,9 @@ class Randomizer extends Component {
          polygonOffsetFactor: 1, // positive value pushes polygon further away
          polygonOffsetUnits: 1
       });
-      this.lineMaterial = new THREE.LineBasicMaterial( { color: 0xffffff, linewidth: 2 } );
+      this.lineMaterial = new THREE.LineBasicMaterial( { color: 0xffffff } );
       this.roundLineMaterial = new THREE.MeshBasicMaterial( { color: 0xffffff, side: THREE.BackSide } );
+      this.capMaterial = new THREE.MeshBasicMaterial( { color: 0x6666ff } );
    }
 
    componentDidMount() {
@@ -105,6 +106,19 @@ class Randomizer extends Component {
       else {
          wireframe = new THREE.Mesh( geom, this.roundLineMaterial );
          wireframe.scale.multiplyScalar(1.01);
+         // Add cylinder cap outlines
+         if(objType === CYLINDER) {
+            let topCap = new THREE.LineSegments( new THREE.EdgesGeometry( geom ), this.lineMaterial );
+            let botCap = new THREE.LineSegments( new THREE.EdgesGeometry( geom ), this.lineMaterial );
+            wireframe.add(topCap);
+            wireframe.add(botCap);
+            topCap.position.setComponent(1, geom.parameters.height/2);
+            botCap.position.setComponent(1, -geom.parameters.height/2);
+            topCap.scale.setComponent(1, 0);
+            botCap.scale.setComponent(1, 0);
+            topCap.layers.set(2);
+            botCap.layers.set(2);
+         }
       }
       wireframe.layers.set(2);
       mesh.add( wireframe );
