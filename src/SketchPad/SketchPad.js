@@ -10,17 +10,17 @@ class SketchPad extends Component{
       super(props);
       this.state = {
          brushSize: 5,
-         brushColor: "444",
+         brushColor: "#000",
       };
    }
 
-   onBrushColorChange(value) {
+   changeBrushColor = (color, event) => {
       this.setState({
-         brushColor: value
+         brushColor: color.hex
       })
    }
 
-   onBrushSizeChange(value) {
+   changeBrushSize = (value) => {
       this.setState({
          brushSize: value
       });
@@ -40,13 +40,12 @@ class SketchPad extends Component{
             
          />
          <p>Brush Size</p>
-         <Slider onChange={this.onBrushSizeChange.bind(this)} defaultValue={1} max={15}/>
-         {/* Eraser
-            */}
-         <SketchPicker />
-         <button onClick={() => {this.onBrushColorChange.bind(this)("#fff"); this.onBrushSizeChange.bind(this)(12);}}>
+         <Slider onChange={this.changeBrushSize} defaultValue={1} max={15}/>
+         {/* TODO: Find a way to implement or simulate an eraser */}
+         <SketchPicker color={this.state.brushColor} onChange={this.changeBrushColor}/>
+         {/* <button onClick={() => {this.changeBrushColor("#fff"); this.onBrushSizeChange.bind(this)(12);}}>
             "Eraser"
-         </button>
+         </button> */}
          <button onClick={() => {this.drawCanvas.undo()}}>
             Undo
          </button>
