@@ -24,10 +24,22 @@ class SketchPad extends Component{
       this.setState({
          brushSize: value
       });
-   } 
+   }
+   
+   wheelHandler = (event) => {
+      // Scroll Down
+      if(event.deltaY > 0) {
+         this.changeBrushSize(Math.max(this.state.brushSize-1, 1))
+      }
+      // Scroll Up
+      else {
+         this.changeBrushSize(Math.min(this.state.brushSize+1, 15))
+      }
+      
+   }
 
    render() {
-      return <div id="sketch-pad">
+      return <div id="sketch-pad" onWheel={this.wheelHandler}>
          <CanvasDraw 
             ref={drawCanvas => (this.drawCanvas = drawCanvas)}
             canvasWidth={650} 
@@ -38,14 +50,14 @@ class SketchPad extends Component{
             brushRadius={this.state.brushSize}
             brushColor={this.state.brushColor}
             
+            
          />
          <p>Brush Size</p>
          <Slider onChange={this.changeBrushSize} defaultValue={1} max={15}/>
-         {/* TODO: Find a way to implement or simulate an eraser */}
          <SketchPicker color={this.state.brushColor} onChange={this.changeBrushColor}/>
-         {/* <button onClick={() => {this.changeBrushColor("#fff"); this.onBrushSizeChange.bind(this)(12);}}>
-            "Eraser"
-         </button> */}
+         <button onClick={() => {this.changeBrushColor( {"hex": "#fff"} )}}>
+            Eraser
+         </button>
          <button onClick={() => {this.drawCanvas.undo()}}>
             Undo
          </button>
