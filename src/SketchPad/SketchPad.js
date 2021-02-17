@@ -11,7 +11,27 @@ class SketchPad extends Component{
       this.state = {
          brushSize: 5,
          brushColor: "#000",
+         mouseIsDown: false
       };
+   }
+
+  componentDidMount() {
+      document.onmousedown = this.onDocMouseDown;
+      document.onmouseup = this.onDocMouseUp;
+  }
+
+   onCanvasMouseOver = (event) => {
+      if(this.state.mouseIsDown) {
+         this.drawCanvas.handleDrawStart(event);
+      }
+   }
+
+   onDocMouseDown = () => {
+      this.state.mouseIsDown = true;
+   }
+
+   onDocMouseUp = () => {
+      this.state.mouseIsDown = false;
    }
 
    changeBrushColor = (color, event) => {
@@ -40,20 +60,20 @@ class SketchPad extends Component{
 
    render() {
       return <div id="sketch-pad" onWheel={this.wheelHandler}>
-         <CanvasDraw 
-            ref={drawCanvas => (this.drawCanvas = drawCanvas)}
-            canvasWidth={650} 
-            canvasHeight={650}
-            catenaryColor={"#0000"}
-            lazyRadius={0}
-            hideGrid={true}
-            brushRadius={this.state.brushSize}
-            brushColor={this.state.brushColor}
-            
-            
-         />
+         <div id="canvas-wrap" onMouseOver={this.onCanvasMouseOver}>
+            <CanvasDraw 
+               ref={drawCanvas => (this.drawCanvas = drawCanvas)}
+               canvasWidth={650} 
+               canvasHeight={650}
+               catenaryColor={"#0000"}
+               lazyRadius={0}
+               hideGrid={true}
+               brushRadius={this.state.brushSize}
+               brushColor={this.state.brushColor}
+            />
+         </div>
          <p>Brush Size</p>
-         <Slider onChange={this.changeBrushSize} defaultValue={1} max={15}/>
+         <Slider onChange={this.changeBrushSize} value={this.state.brushSize} defaultValue={1} max={15}/>
          <SketchPicker color={this.state.brushColor} onChange={this.changeBrushColor}/>
          <button onClick={() => {this.changeBrushColor( {"hex": "#fff"} )}}>
             Eraser
