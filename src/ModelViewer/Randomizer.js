@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import { ChromePicker } from 'react-color';
 import Slider from 'rc-slider';
 import * as THREE from 'three';
 import { getRandomIntInclusive, getRandomNumber } from './RandomNumber';
@@ -15,12 +16,13 @@ class Randomizer extends Component {
       super(props)
       this.state = {
          minObjects: 1,
-         maxObjects: 4
+         maxObjects: 4,
+         objColor: "#0000ff",
       }
       this.curMeshes = [];
       // TODO: random color
       this.material = new THREE.MeshBasicMaterial({
-         color: 0x0000ff,
+         color: this.state.objColor,
          polygonOffset: true,
          polygonOffsetFactor: 1, // positive value pushes polygon further away
          polygonOffsetUnits: 1
@@ -145,6 +147,14 @@ class Randomizer extends Component {
          }
       });
    }
+
+   changeObjColor = (event) => {
+      this.setState({
+         objColor: event.hex
+      });
+      this.material.color.set(event.hex);
+      this.props.renderer.render(this.props.scene, this.props.camera);
+   }
    
    render() {
       return (
@@ -156,6 +166,7 @@ class Randomizer extends Component {
                <p>Max Objects</p>
                <Slider onChange={this.changeMaxObjects} value={this.state.maxObjects} min={1} max={10}/>
             </div>
+            <ChromePicker onChange={this.changeObjColor} color={this.state.objColor}/>
             <div>
                <button onClick={this.randomize}>Randomize!</button>
             </div>

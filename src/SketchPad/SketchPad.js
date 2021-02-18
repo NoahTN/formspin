@@ -1,7 +1,7 @@
 import { Component } from 'react';
 import ReactDOM from "react-dom";
 import CanvasDraw from "react-canvas-draw";
-import { SketchPicker } from 'react-color';
+import { ChromePicker } from 'react-color';
 import Slider, { Range } from 'rc-slider';
 import 'rc-slider/assets/index.css';
 
@@ -74,7 +74,7 @@ class SketchPad extends Component{
          </div>
          <p>Brush Size</p>
          <Slider onChange={this.changeBrushSize} value={this.state.brushSize} defaultValue={1} max={15}/>
-         <SketchPicker color={this.state.brushColor} onChange={this.changeBrushColor}/>
+         <ChromePicker color={this.state.brushColor} onChange={this.changeBrushColor}/>
          <button onClick={() => {this.changeBrushColor( {"hex": "#fff"} )}}>
             Eraser
          </button>
