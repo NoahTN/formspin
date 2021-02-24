@@ -3,6 +3,7 @@ import { ChromePicker } from 'react-color';
 import Slider from 'rc-slider';
 import * as THREE from 'three';
 import { getRandomIntInclusive, getRandomNumber } from './RandomNumber';
+import Timer from './Timer';
 import './Randomizer.scss';
 
 const SPHERE = 0;
@@ -18,6 +19,7 @@ class Randomizer extends Component {
          minObjects: 1,
          maxObjects: 4,
          objColor: "#0000ff",
+         seconds: 0
       }
       this.curMeshes = [];
       // TODO: random color
@@ -30,6 +32,8 @@ class Randomizer extends Component {
       this.lineMaterial = new THREE.LineBasicMaterial( { color: 0xffffff } );
       this.roundLineMaterial = new THREE.MeshBasicMaterial( { color: 0xffffff, side: THREE.BackSide } );
       this.capMaterial = new THREE.MeshBasicMaterial( { color: 0x6666ff } );
+
+      this.updateSeconds = this.updateSeconds.bind(this);
    }
 
    componentDidMount() {
@@ -51,9 +55,11 @@ class Randomizer extends Component {
          this.props.scene.add(this.curMeshes[i]);
       }
       this.props.renderer.render(this.props.scene, this.props.camera);
+
       //  display and set timer
-
-
+      this.timer.startTimer();
+      // TODO: Retrieve signal and re-randomize
+      // TODO: Change randomize button into STOP
    }
 
    createRandomObject = () => {
@@ -128,46 +134,56 @@ class Randomizer extends Component {
       return mesh;
    }
 
-   changeMinObjects = (value) => {
+   updateMinObjects = (value) => {
       this.setState({
          minObjects: value,
       }, () => {
          if(value > this.state.maxObjects) {
-            this.changeMaxObjects(value);
+            this.updateMaxObjects(value);
          }
       });
    }
 
-   changeMaxObjects = (value) => {
+   updateMaxObjects = (value) => {
       this.setState({
          maxObjects: value,
       }, () => {
          if(value < this.state.minObjects) {
-            this.changeMinObjects(value);
+            this.updateMinObjects(value);
          }
       });
    }
 
-   changeObjColor = (event) => {
+   updateObjColor = (event) => {
       this.setState({
          objColor: event.hex
       });
       this.material.color.set(event.hex);
       this.props.renderer.render(this.props.scene, this.props.camera);
    }
+
+   updateSeconds= (event) => {
+      this.setState({
+         seconds: parseInt(event.target.value) // countDown subtracts 1 for re-rendering
+      });
+   }
    
    render() {
       return (
          <div id="randomizer-settings" className="settings-panel" style={{display: this.props.settingsMode == 2 ? 'block' : 'none'}}>
-            <p id="timer" style={{display: this.props.settingsMode === 2 ? 'block' : 'none'}}>60</p> 
+            <p id="timer" style={{display: this.props.settingsMode === 2 ? 'block' : 'none'}}>
+               <Timer ref={timer => {this.timer=timer}} seconds={this.state.seconds} updateSeconds={this.updateSeconds}></Timer>
+            </p> 
             <div id="scale-sliders">
                <p>Min. Objects</p>
-               <Slider onChange={this.changeMinObjects} value={this.state.minObjects} min={1} max={10}/>
+               <Slider onChange={this.updateMinObjects} value={this.state.minObjects} min={1} max={10}/>
                <p>Max Objects</p>
-               <Slider onChange={this.changeMaxObjects} value={this.state.maxObjects} min={1} max={10}/>
+               <Slider onChange={this.updateMaxObjects} value={this.state.maxObjects} min={1} max={10}/>
             </div>
-            <ChromePicker onChange={this.changeObjColor} color={this.state.objColor}/>
+            <ChromePicker onChange={this.updateObjColor} color={this.state.objColor}/>
             <div>
+               <label>Timer (0 for Off)</label>
+               <input type="number" defaultValue={0} onChange={this.updateSeconds} id="timer-input"></input>
                <button onClick={this.randomize}>Randomize!</button>
             </div>
          </div>

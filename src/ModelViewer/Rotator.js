@@ -77,7 +77,7 @@ class Rotator extends Component {
       }
    }
 
-   changeModel = (event) => {
+   updateModel = (event) => {
       const newIdx = parseInt(event.target.value);
       this.meshes[newIdx].scale.copy(this.meshes[this.currentIdx].scale);
       this.meshes[newIdx].position.copy(this.meshes[this.currentIdx].position);
@@ -90,12 +90,12 @@ class Rotator extends Component {
       this.renderScene();
    }
    
-   changeScale = (axis, value) => {
+   updateScale = (axis, value) => {
       this.meshes[this.currentIdx].scale.setComponent(axis, value);
       this.renderScene();
    }
 
-   changePos = (axis, event) => {
+   updatePos = (axis, event) => {
       if(axis === RESET) {
          this.meshes[this.currentIdx].position.set(0, 0, 0);
       }
@@ -105,7 +105,7 @@ class Rotator extends Component {
       this.renderScene();
    }
 
-   changeRot = (axis, event) =>{
+   updateRot = (axis, event) =>{
       if(axis === RESET) {
          this.meshes[this.currentIdx].rotation.set(0, 0, 0, 'XYZ');
       }
@@ -127,34 +127,34 @@ class Rotator extends Component {
          <p id="hint-mode" style={{display: this.props.settingsMode === 0 ? 'block' : 'none'}}>Press "r" to toggle modes</p> 
          <div id="scale-sliders">
             <p>X Scale</p>
-            <Slider onChange={(e) => this.changeScale(0, e)} defaultValue={1} max={10}/>
+            <Slider onChange={(e) => this.updateScale(0, e)} defaultValue={1} max={10}/>
             <p>Y Scale</p>
-            <Slider onChange={(e) => this.changeScale(1, e)} defaultValue={1} max={10}/>
+            <Slider onChange={(e) => this.updateScale(1, e)} defaultValue={1} max={10}/>
             <p>Z Scale</p>
-            <Slider onChange={(e) => this.changeScale(2, e)} defaultValue={1} max={10}/>
+            <Slider onChange={(e) => this.updateScale(2, e)} defaultValue={1} max={10}/>
          </div>
          <div id="settings-right">
             <div id="pos-input">
                <p>Position</p>
                <label>X</label>
-               <input type="number" value={this.trimDec( this.state.objPos[0])} onChange={(e) => this.changePos(0, e)} min={-3.6} max={3.6}/>
+               <input type="number" value={this.trimDec( this.state.objPos[0])} onChange={(e) => this.updatePos(0, e)} min={-3.6} max={3.6}/>
                <label>Y</label>
-               <input type="number" value={this.trimDec(this.state.objPos[1])} onChange={(e) => this.changePos(1, e)} min={-3.6} max={3.6}/>
+               <input type="number" value={this.trimDec(this.state.objPos[1])} onChange={(e) => this.updatePos(1, e)} min={-3.6} max={3.6}/>
                <label>Z</label>
-               <input type="number" value={this.trimDec(this.state.objPos[2])} onChange={(e) => this.changePos(2, e)}/>
-               <button onClick={(e) => this.changePos(RESET, e)}>Reset</button>
+               <input type="number" value={this.trimDec(this.state.objPos[2])} onChange={(e) => this.updatePos(2, e)}/>
+               <button onClick={(e) => this.updatePos(RESET, e)}>Reset</button>
             </div>
             <div id="rot-input">
                <p>Rotation (Degrees)</p>
                <label>X</label>
-               <input type="number" value={this.trimDec(THREE.Math.radToDeg(this.state.objRot[0]))} onChange={(e) => this.changeRot(0, e)}/>
+               <input type="number" value={this.trimDec(THREE.Math.radToDeg(this.state.objRot[0]))} onChange={(e) => this.updateRot(0, e)}/>
                <label>Y</label>
-               <input type="number" value={this.trimDec(THREE.Math.radToDeg(this.state.objRot[1]))} onChange={(e) => this.changeRot(1, e)}/>
+               <input type="number" value={this.trimDec(THREE.Math.radToDeg(this.state.objRot[1]))} onChange={(e) => this.updateRot(1, e)}/>
                <label>Z</label>
-               <input type="number" value={this.trimDec(THREE.Math.radToDeg(this.state.objRot[2]))} onChange={(e) => this.changeRot(2, e)}/>
-               <button onClick={(e) => this.changeRot(RESET, e)}>Reset</button>
+               <input type="number" value={this.trimDec(THREE.Math.radToDeg(this.state.objRot[2]))} onChange={(e) => this.updateRot(2, e)}/>
+               <button onClick={(e) => this.updateRot(RESET, e)}>Reset</button>
             </div>
-            <div id="model-radio" onChange={this.changeModel}>
+            <div id="model-radio" onChange={this.updateModel}>
                <input type="radio" value="0" name="Model"/>Sphere
                <input type="radio" value="1" name="Model" defaultChecked/>Cube
                <input type="radio" value="2" name="Model"/>Cylinder
